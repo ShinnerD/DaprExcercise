@@ -5,6 +5,9 @@ riderModule.iml
 /_ReSharper.Caches/
 # Common IntelliJ Platform excludes
 
+**/.idea.DaprExcercise/**
+**/.idea/**
+
 # User specific
 **/.idea/**/workspace.xml
 **/.idea/**/tasks.xml
