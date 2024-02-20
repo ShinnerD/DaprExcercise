@@ -9,4 +9,3 @@ spec:
   pubsubname: pubsub
 scopes:
   - helloworldsubscribe
-  - helloworldsubscribe2

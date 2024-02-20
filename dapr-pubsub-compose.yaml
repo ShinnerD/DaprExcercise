@@ -1,0 +1,93 @@
+version: '3'
+  ############################
+  # Network setup
+  ############################
+networks:
+  hello-dapr:
+
+services:
+  ############################
+  # Publish + Dapr sidecar
+  ############################
+  helloworldpublish:
+    build: ./API.HelloWorld.Publish
+    ports:
+      - "50002:50002"
+    depends_on:
+      - redis
+      - placement
+      - dtc-rabbitmq
+    networks:
+      - hello-dapr
+  helloworldpublish-dapr:
+    image: "daprio/daprd:edge"
+    command: ["./daprd",
+              "-app-id", "helloworldpublish",
+              "-app-port", "5243",
+              "-placement-host-address", "placement:50006",
+              "-dapr-grpc-port", "50002",
+              "-components-path", ".././API.Components"]
+    volumes:
+      - ".././API.Components/:/components"
+    depends_on:
+      - helloworldpublish
+    network_mode: "service:helloworldpublish"
+
+  ############################
+  # Subscribe + Dapr sidecar
+  ############################
+  helloworldsubscribe:
+    build: ./API.HelloWorld.Subscriber
+    ports:
+      - "50003:50003"
+    depends_on:
+      - redis
+      - placement
+      - dtc-rabbitmq
+    networks:
+      - hello-dapr
+  helloworldsubscribe-dapr:
+    image: "daprio/daprd:edge"
+    command: ["./daprd",
+              "-app-id", "helloworldsubscribe",
+              "-app-port", "5182",
+              "-placement-host-address", "placement:50006",
+              "-dapr-grpc-port", "50003",
+              "-components-path", ".././API.Components"]
+    volumes:
+      - ".././API.Components/:/components"
+    depends_on:
+      - helloworldsubscribe
+    network_mode: "service:helloworldsubscribe"
+
+  ############################
+  # Dapr placement service
+  ############################
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50006"]
+    ports:
+      - "50006:50006"
+    networks:
+      - hello-dapr
+
+  ############################
+  # Redis state store
+  ############################
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6380:6379"
+    networks:
+      - hello-dapr
+  
+  ############################
+  # RabbitMq
+  ############################
+  dtc-rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - hello-dapr
