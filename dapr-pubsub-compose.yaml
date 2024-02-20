@@ -26,9 +26,9 @@ services:
               "-app-port", "5243",
               "-placement-host-address", "placement:50006",
               "-dapr-grpc-port", "50002",
-              "-components-path", ".././API.Components"]
+              "-components-path", "/components"]
     volumes:
-      - ".././API.Components/:/components"
+      - "./API.Components/:/components"
     depends_on:
       - helloworldpublish
     network_mode: "service:helloworldpublish"
@@ -53,7 +53,7 @@ services:
               "-app-port", "5182",
               "-placement-host-address", "placement:50006",
               "-dapr-grpc-port", "50003",
-              "-components-path", ".././API.Components"]
+              "-components-path", "/components"]
     volumes:
       - ".././API.Components/:/components"
     depends_on:
