@@ -1,64 +1,75 @@
 version: '3'
-  ############################
-  # Network setup
-  ############################
-networks:
-  hello-dapr:
-
 services:
-  ############################
-  # Publish + Dapr sidecar
-  ############################
+  ####################################
+  # HelloWorldPublish service + Dapr sidecar
+  ####################################
   helloworldpublish:
     build: ./API.HelloWorld.Publish
-    ports:
-      - "50002:50002"
     depends_on:
-      - redis
+      - rabbitmq
       - placement
-      - dtc-rabbitmq
     networks:
       - hello-dapr
+    ports:
+      - "40100:80"
+      - "50001:50001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:80
   helloworldpublish-dapr:
     image: "daprio/daprd:edge"
     command: ["./daprd",
               "-app-id", "helloworldpublish",
-              "-app-port", "5243",
+              "-app-port", "80",
               "-placement-host-address", "placement:50006",
-              "-dapr-grpc-port", "50002",
               "-components-path", "/components"]
     volumes:
       - "./API.Components/:/components"
     depends_on:
       - helloworldpublish
+      - rabbitmq
     network_mode: "service:helloworldpublish"
 
-  ############################
-  # Subscribe + Dapr sidecar
-  ############################
+  ####################################
+  # HelloWorldSubscribe service + Dapr sidecar
+  ####################################
   helloworldsubscribe:
     build: ./API.HelloWorld.Subscriber
-    ports:
-      - "50003:50003"
     depends_on:
-      - redis
+      - rabbitmq
       - placement
-      - dtc-rabbitmq
     networks:
       - hello-dapr
+    ports:
+      - "40200:80"
+      - "50002:50001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:80
   helloworldsubscribe-dapr:
     image: "daprio/daprd:edge"
     command: ["./daprd",
               "-app-id", "helloworldsubscribe",
-              "-app-port", "5182",
+              "-app-port", "80",
               "-placement-host-address", "placement:50006",
-              "-dapr-grpc-port", "50003",
               "-components-path", "/components"]
     volumes:
-      - ".././API.Components/:/components"
+      - "./API.Components/:/components"
     depends_on:
       - helloworldsubscribe
+      - rabbitmq
     network_mode: "service:helloworldsubscribe"
+
+  ############################
+  # RabbitMQ service
+  ############################
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "5672:5672"
+      - "15672:15672" # Management UI
+    networks:
+      - hello-dapr
 
   ############################
   # Dapr placement service
@@ -71,23 +82,5 @@ services:
     networks:
       - hello-dapr
 
-  ############################
-  # Redis state store
-  ############################
-  redis:
-    image: "redis:alpine"
-    ports:
-      - "6380:6379"
-    networks:
-      - hello-dapr
-  
-  ############################
-  # RabbitMq
-  ############################
-  dtc-rabbitmq:
-    image: "rabbitmq:3-management"
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    networks:
-      - hello-dapr
+networks:
+  hello-dapr:

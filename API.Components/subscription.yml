@@ -6,6 +6,6 @@ spec:
   topic: hellotopic
   routes:
     default: /receive-hello
-  pubsubname: pubsub
+  pubsubname: rabbitmq
 scopes:
   - helloworldsubscribe

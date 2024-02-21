@@ -6,7 +6,7 @@ riderModule.iml
 # Common IntelliJ Platform excludes
 
 **/.idea.DaprExcercise/**
-**/.idea/**
+**/.idea/
 
 # User specific
 **/.idea/**/workspace.xml
