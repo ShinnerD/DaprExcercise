@@ -4,31 +4,31 @@ services:
   # HelloWorldPublish service + Dapr sidecar
   ####################################
   helloworldpublish:
-    build: ./API.HelloWorld.Publish
+    build: ./API.HelloWorld.Publish  # Points to the project folder which contains the Dockerfile
     depends_on:
       - rabbitmq
       - placement
     networks:
-      - hello-dapr
+      - hello-dapr      # This docker network is defined at the bottom of this file and all the services use it.
     ports:
-      - "40100:80"
-      - "50001:50001"
+      - "40100:80"      # Map Port 80 to 40100 making the API accessible on host computer on localhost:40100
+      - "50001:50001"   # Port 50001 is the standard DAPR gRPC port and is needed to communicate with sidecar.
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://0.0.0.0:80
-  helloworldpublish-dapr:
+      - ASPNETCORE_ENVIRONMENT=Development  # Set the environment to Development to make user of localhost:40100/swagger
+      - ASPNETCORE_URLS=http://0.0.0.0:80   # Makes the app available on localhost:80 inside the container.
+  helloworldpublish-dapr:                   # Remember to check the projects Dockerfile and see that it exposes port 80.
     image: "daprio/daprd:edge"
     command: ["./daprd",
-              "-app-id", "helloworldpublish",
-              "-app-port", "80",
-              "-placement-host-address", "placement:50006",
-              "-components-path", "/components"]
+              "-app-id", "helloworldpublish", # Should be the id for the api that the sidecar is for.
+              "-app-port", "80",              # Should match the port exposed in the APIs Dockerfile
+              "-placement-host-address", "placement:50006", # "placement" is the name given to the placement service further down.
+              "-resources-path", "/components"]            # Points to a /components folder inside the container (see below)
     volumes:
-      - "./API.Components/:/components"
-    depends_on:
+      - "./API.Components/:/components"       # Maps the API.Components folder at the solution root to a folder called /components inside the container.
+    depends_on:                               # This makes the -resources-path command above point to a folder inside the container which is actually ./API.Components
       - helloworldpublish
       - rabbitmq
-    network_mode: "service:helloworldpublish"
+    network_mode: "service:helloworldpublish" # This sidecar should be on the same network as helloworldpublish
 
   ####################################
   # HelloWorldSubscribe service + Dapr sidecar
@@ -42,7 +42,7 @@ services:
       - hello-dapr
     ports:
       - "40200:80"
-      - "50002:50001"
+      - "50002:50001"   # Port 50001 is the standard DAPR gRPC port and is needed to communicate with sidecar.
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
@@ -52,7 +52,7 @@ services:
               "-app-id", "helloworldsubscribe",
               "-app-port", "80",
               "-placement-host-address", "placement:50006",
-              "-components-path", "/components"]
+              "-resources-path", "/components"]
     volumes:
       - "./API.Components/:/components"
     depends_on:
@@ -66,7 +66,7 @@ services:
   rabbitmq:
     image: "rabbitmq:3-management"
     ports:
-      - "5672:5672"
+      - "5672:5672"   # RabbitMQ standard amqp port
       - "15672:15672" # Management UI
     networks:
       - hello-dapr
@@ -78,9 +78,12 @@ services:
     image: "daprio/dapr"
     command: ["./placement", "-port", "50006"]
     ports:
-      - "50006:50006"
+      - "50006:50006" # We map the port defined above to the outside of the container so the sidecars can reach it.
     networks:
       - hello-dapr
 
+############################
+# Docker Network - Connects everything
+############################
 networks:
   hello-dapr:
