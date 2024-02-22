@@ -7,8 +7,8 @@ spec:
   version: v1
   metadata:
     - name: connectionString
-      value: "amqp://guest:guest@rabbitmq:5672"
-    - name: durable
+      value: "amqp://guest:guest@rabbitmq:5672"   # guest:guest is standard rabbitMQ username and password. 
+    - name: durable                               # rabbitmq:5672 is the address for the queue service.
       value: "false"
     - name: deletedWhenUnused
       value: "false"
