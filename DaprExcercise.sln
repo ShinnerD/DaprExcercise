@@ -1,10 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.HelloWorld", "API.HelloWorld\API.HelloWorld.csproj", "{2C3F887E-F01C-49DE-9B7C-F7EF85E3211B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.HelloWorld.Publish", "API.HelloWorld.Publish\API.HelloWorld.Publish.csproj", "{3940D94C-757F-46B8-BB34-6A9260486DAB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.HelloWorld.Subscriber", "API.HelloWorld.Subscriber\API.HelloWorld.Subscriber.csproj", "{F99AD844-F380-4FCB-8B69-FAA1CA87BF85}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{18628BBE-32C9-4793-A736-D872427E03C1}"
+	ProjectSection(SolutionItems) = preProject
+		dapr-pubsub-compose.yaml = dapr-pubsub-compose.yaml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2C3F887E-F01C-49DE-9B7C-F7EF85E3211B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2C3F887E-F01C-49DE-9B7C-F7EF85E3211B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2C3F887E-F01C-49DE-9B7C-F7EF85E3211B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2C3F887E-F01C-49DE-9B7C-F7EF85E3211B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3940D94C-757F-46B8-BB34-6A9260486DAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3940D94C-757F-46B8-BB34-6A9260486DAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3940D94C-757F-46B8-BB34-6A9260486DAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
